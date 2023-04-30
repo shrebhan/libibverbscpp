@@ -60,7 +60,7 @@ static void run(void)
 	cap.setMaxInlineData(16);
 	attr.setCapabilities(cap);
 	attr.setSignalAll(1);
-	auto id = rdma::createEP(res, NULL, boost::make_optional(attr));
+	auto id = rdma::createEP(res, boost::none, boost::make_optional(attr));
 	// Check to see if we got inline data allowed or not
 	if (attr.getCapabilities().getMaxInlineData() >= 16)
 		inlineFlag = true;

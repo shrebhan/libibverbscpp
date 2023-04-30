@@ -45,7 +45,7 @@ static int run(void)
 	ibv::workcompletion::WorkCompletion wc;
 	bool inlineFlag = false;
 
-	uint8_t send_msg[16];
+	uint8_t send_msg[16] = {1, 2, 3, 4, 5, 60, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
 	uint8_t recv_msg[16];
 
 	memset(&hints, 0, sizeof hints);
@@ -63,7 +63,7 @@ static int run(void)
 	cap.setMaxInlineData(16);
 	init_attr.setCapabilities(cap);
 	init_attr.setSignalAll(1);
-	auto listen_id = rdma::createEP(res, NULL, boost::make_optional(init_attr));
+	auto listen_id = rdma::createEP(res, boost::none, boost::make_optional(init_attr));
 	listen_id->listen(0);
 	auto id = listen_id->getRequest();
 
@@ -87,6 +87,7 @@ static int run(void)
 	qp->postRecv(recv_wr, bad_recv_wr);
 	id->accept(nullptr);
 
+
 	auto recv_cq = id->getQP()->getRecvCQ();
 	while ((recv_cq->poll(1, &wc)) == 0);
 
@@ -100,6 +101,8 @@ static int run(void)
 
 	auto send_cq = qp->getSendCQ();
 	while ((send_cq->poll(1, &wc)) == 0);
+	
+	printf("message is [5] = %d \n", recv_msg[5]);
 
 	id->disconnect();
 	return 0;
@@ -127,6 +130,6 @@ int main(int argc, char **argv)
 
 	printf("rdma_server: start\n");
 	run();
-	printf("rdma_server: end\n");
+	printf("rdma server: end\n");
 	return 0;
 }
