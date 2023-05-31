@@ -36,7 +36,7 @@
 #include <librdmacmcpp.h>
 
 static const char *server = "0.0.0.0";
-static const char *port = "7471";
+static const char *port = "7474";
 
 static int run(void)
 {
@@ -76,17 +76,19 @@ static int run(void)
 		printf("rdma_server: device doesn't support IBV_SEND_INLINE, "
 		       "using sge sends\n");
 
-	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 16,
+	auto mr = id->getPD()->registerMemoryRegion(recv_msg, N,
 						    { ibv::AccessFlag::LOCAL_WRITE });
-	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 16, {});
+	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, N, {});
 
 	auto qp = id->getQP();
 	auto recv_wr = ibv::workrequest::Simple<ibv::workrequest::Recv>();
 	recv_wr.setLocalAddress(mr->getSlice());
 	ibv::workrequest::Recv *bad_recv_wr;
-	qp->postRecv(recv_wr, bad_recv_wr);
+	
 	id->accept(nullptr);
 
+	auto start = steady_clock::now();
+	qp->postRecv(recv_wr, bad_recv_wr);
 
 	auto recv_cq = id->getQP()->getRecvCQ();
 	while ((recv_cq->poll(1, &wc)) == 0);
@@ -101,6 +103,8 @@ static int run(void)
 
 	auto send_cq = qp->getSendCQ();
 	while ((send_cq->poll(1, &wc)) == 0);
+	double endtime = std::chrono::duration_cast<std::chrono::microseconds>(steady_clock::now() - start).count();
+    std::cout << endtime << " microseconds\n";
 	
 	printf("message is [5] = %d \n", recv_msg[5]);
 

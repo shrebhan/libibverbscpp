@@ -35,14 +35,28 @@
 #include <getopt.h>
 #include <librdmacmcpp.h>
 
-static const char *server = "127.0.0.1";
-static const char *port = "7471";
+static const char *server = "192.168.0.27";
+static const char *port = "7474";
+
+#define N 262385
+
+using namespace std::chrono;
 
 static void run(void)
 {
 	bool inlineFlag;
-	static uint8_t send_msg[16];
-	static uint8_t recv_msg[16];
+	static uint8_t send_msg[N];
+	static uint8_t recv_msg[N];
+
+	//populate send msg
+	for(int i=0; i<N; i++){
+		if(i%2){
+			send_msg[i] = 255;
+		} else {
+			send_msg[i] = 1;
+		}
+	}
+
 
 	struct rdma_addrinfo hints;
 
@@ -68,15 +82,15 @@ static void run(void)
 		printf("rdma_client: device doesn't support IBV_SEND_INLINE, "
 		       "using sge sends\n");
 
-	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 16,
+	auto mr = id->getPD()->registerMemoryRegion(recv_msg, N,
 						    { ibv::AccessFlag::LOCAL_WRITE });
-	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 16, {});
+	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, N, {});
 
 	auto qp = id->getQP();
 	auto recv_wr = ibv::workrequest::Simple<ibv::workrequest::Recv>();
 	recv_wr.setLocalAddress(mr->getSlice());
 	ibv::workrequest::Recv *bad_recv_wr;
-	qp->postRecv(recv_wr, bad_recv_wr);
+	
 	id->connect(nullptr);
 
 	auto wr = ibv::workrequest::Simple<ibv::workrequest::Send>();
@@ -85,6 +99,11 @@ static void run(void)
 	if (inlineFlag) {
 		wr.setFlags({ ibv::workrequest::Flags::INLINE });
 	}
+
+	//uint64_t timer_start = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
+    auto start = steady_clock::now();
+
+	qp->postRecv(recv_wr, bad_recv_wr);
 	qp->postSend(wr, bad_wr);
 
 	ibv::workcompletion::WorkCompletion wc;
@@ -93,6 +112,10 @@ static void run(void)
 
 	auto recv_cq = id->getQP()->getRecvCQ();
 	while ((recv_cq->poll(1, &wc)) == 0);
+
+	//uint64_t timer_end = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
+	double endtime = std::chrono::duration_cast<std::chrono::microseconds>(steady_clock::now() - start).count();
+    std::cout << endtime << " microseconds\n";
 
 	id->disconnect();
 }
