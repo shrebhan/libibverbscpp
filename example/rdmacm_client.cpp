@@ -34,29 +34,23 @@
 #include <errno.h>
 #include <getopt.h>
 #include <librdmacmcpp.h>
+#include <chrono>
 
 static const char *server = "192.168.0.27";
-static const char *port = "7474";
+static const char *port = "9002";
 
-#define N 262385
+#define N 24
 
 using namespace std::chrono;
 
 static void run(void)
 {
 	bool inlineFlag;
-	static uint8_t send_msg[N];
-	static uint8_t recv_msg[N];
+	uint8_t* send_msg = new uint8_t[N];
+	uint8_t* recv_msg = new uint8_t[N];
 
 	//populate send msg
-	for(int i=0; i<N; i++){
-		if(i%2){
-			send_msg[i] = 255;
-		} else {
-			send_msg[i] = 1;
-		}
-	}
-
+	memset(send_msg, 1, N);
 
 	struct rdma_addrinfo hints;
 
