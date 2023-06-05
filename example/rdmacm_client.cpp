@@ -34,7 +34,6 @@
 #include <errno.h>
 #include <getopt.h>
 #include <librdmacmcpp.h>
-#include <vector>
 
 static const char *server = "192.168.0.27";
 static const char *port = "7471";
@@ -42,11 +41,8 @@ static const char *port = "7471";
 static void run(void)
 {
 	bool inlineFlag;
-	//static uint8_t send_msg[16];
-	static uint8_t recv_msg[16];
-	std::vector<uint8_t> send_msg(16, 1);
-
-
+	static uint8_t send_msg[1024];
+	static uint8_t recv_msg[1024];
 
 	struct rdma_addrinfo hints;
 
@@ -61,20 +57,20 @@ static void run(void)
 	cap.setMaxRecvWr(1);
 	cap.setMaxSendSge(1);
 	cap.setMaxRecvSge(1);
-	cap.setMaxInlineData(16);
+	cap.setMaxInlineData(1024);
 	attr.setCapabilities(cap);
 	attr.setSignalAll(1);
 	auto id = rdma::createEP(res, boost::none, boost::make_optional(attr));
 	// Check to see if we got inline data allowed or not
-	if (attr.getCapabilities().getMaxInlineData() >= 16)
+	if (attr.getCapabilities().getMaxInlineData() >= 1024)
 		inlineFlag = true;
 	else
 		printf("rdma_client: device doesn't support IBV_SEND_INLINE, "
 		       "using sge sends\n");
 
-	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 16,
+	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 1024,
 						    { ibv::AccessFlag::LOCAL_WRITE });
-	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 16, {});
+	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 1024, {});
 
 	auto qp = id->getQP();
 	auto recv_wr = ibv::workrequest::Simple<ibv::workrequest::Recv>();
