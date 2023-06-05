@@ -34,15 +34,19 @@
 #include <errno.h>
 #include <getopt.h>
 #include <librdmacmcpp.h>
+#include <vector>
 
-static const char *server = "127.0.0.1";
+static const char *server = "192.168.0.27";
 static const char *port = "7471";
 
 static void run(void)
 {
 	bool inlineFlag;
-	static uint8_t send_msg[16];
+	//static uint8_t send_msg[16];
 	static uint8_t recv_msg[16];
+	std::vector<uint8_t> send_msg(16, 1);
+
+
 
 	struct rdma_addrinfo hints;
 
