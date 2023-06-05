@@ -34,9 +34,14 @@
 #include <getopt.h>
 #include <netdb.h>
 #include <librdmacmcpp.h>
+#include <chrono>
 
 static const char *server = "0.0.0.0";
-static const char *port = "7474";
+static const char *port = "9002";
+
+#define N 24
+
+using namespace std::chrono;
 
 static int run(void)
 {
@@ -45,8 +50,13 @@ static int run(void)
 	ibv::workcompletion::WorkCompletion wc;
 	bool inlineFlag = false;
 
-	uint8_t send_msg[16] = {1, 2, 3, 4, 5, 60, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-	uint8_t recv_msg[16];
+	//uint8_t send_msg[N]; // {1, 2, 3, 4, 5, 60, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+	//uint8_t recv_msg[N];
+	uint8_t* send_msg = new uint8_t[N];
+        uint8_t* recv_msg = new uint8_t[N];
+
+	//populate send msg
+	memset(send_msg, 2, N);
 
 	memset(&hints, 0, sizeof hints);
 	hints.ai_flags = RAI_PASSIVE;
