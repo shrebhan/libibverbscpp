@@ -69,14 +69,14 @@ static int run(void)
 	auto listen_id = rdma::createEP(res, boost::none, boost::make_optional(init_attr));
 
 	listen_id->listen(0);
-	std::cout<<"1"<<endl;
+	std::cout<<"1"<<std::endl;
 	auto id = listen_id->getRequest();
 
 	memset(&qp_attr, 0, sizeof qp_attr);
 	memset(&init_attr, 0, sizeof init_attr);
 
 	id->getQP()->query(qp_attr, {ibv::queuepair::AttrMask::CAP},  init_attr, {});
-	std::cout<<"2"<<endl;
+	std::cout<<"2"<<std::endl;
 
 	if (init_attr.getCapabilities().getMaxInlineData() >= 32)
 		inlineFlag = true;
@@ -93,9 +93,9 @@ static int run(void)
 	recv_wr.setLocalAddress(mr->getSlice());
 	ibv::workrequest::Recv *bad_recv_wr;
 	qp->postRecv(recv_wr, bad_recv_wr);
-	std::cout<<"2.5"<<endl;
+	std::cout<<"2.5"<<std::endl;
 	id->accept(nullptr);
-	std::cout<<"3"<<endl;
+	std::cout<<"3"<<std::endl;
 
 	auto recv_cq = id->getQP()->getRecvCQ();
 	while ((recv_cq->poll(1, &wc)) == 0);
@@ -108,7 +108,7 @@ static int run(void)
 		wr.setFlags({ ibv::workrequest::Flags::INLINE });
 	}
 	qp->postSend(wr, bad_wr);
-	std::cout<<"4"<<endl;
+	std::cout<<"4"<<std::endl;
 
 	auto send_cq = qp->getSendCQ();
 	while ((send_cq->poll(1, &wc)) == 0);
