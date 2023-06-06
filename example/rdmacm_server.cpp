@@ -62,7 +62,7 @@ static int run(void)
 	cap.setMaxRecvWr(1);
 	cap.setMaxSendSge(1);
 	cap.setMaxRecvSge(1);
-	//cap.setMaxInlineData(1024);
+	cap.setMaxInlineData(1024);
 
 	init_attr.setCapabilities(cap);
 	init_attr.setSignalAll(1);

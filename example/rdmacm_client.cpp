@@ -57,7 +57,7 @@ static void run(void)
 	cap.setMaxRecvWr(1);
 	cap.setMaxSendSge(1);
 	cap.setMaxRecvSge(1);
-	//cap.setMaxInlineData(1024);
+	cap.setMaxInlineData(1024);
 	attr.setCapabilities(cap);
 	attr.setSignalAll(1);
 	auto id = rdma::createEP(res, boost::none, boost::make_optional(attr));
