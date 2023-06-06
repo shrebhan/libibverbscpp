@@ -88,11 +88,15 @@ static void run(void)
 	// if (inlineFlag) {
 	// 	wr.setFlags({ ibv::workrequest::Flags::INLINE });
 	// }
-	qp->postSend(wr, bad_wr);
-	std::cout<<"3"<<std::endl;
-	ibv::workcompletion::WorkCompletion wc;
-	auto send_cq = qp->getSendCQ();
-	while ((send_cq->poll(1, &wc)) == 0);
+	for(int i=0; i<256; i++){
+		qp->postSend(wr, bad_wr);
+		send_msg[5] = i*10;
+		std::cout<<"3"<<std::endl;
+		ibv::workcompletion::WorkCompletion wc;
+		auto send_cq = qp->getSendCQ();
+		while ((send_cq->poll(1, &wc)) == 0);
+	}
+	
 
 	auto recv_cq = id->getQP()->getRecvCQ();
 	while ((recv_cq->poll(1, &wc)) == 0);

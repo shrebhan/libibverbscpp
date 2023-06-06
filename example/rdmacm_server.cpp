@@ -99,7 +99,7 @@ static int run(void)
 	std::cout<<"3"<<std::endl;
 	
 	auto recv_cq = id->getQP()->getRecvCQ();
-	while ((recv_cq->poll(1, &wc)) == 0);
+	while ((recv_cq->poll(256, &wc)) == 0);
 	std::cout<<"3.5"<<std::endl;
 	printf("message is [5] = %d \n", recv_msg[5]);
 
