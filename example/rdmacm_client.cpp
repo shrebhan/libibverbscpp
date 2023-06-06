@@ -41,7 +41,7 @@ static const char *port = "9008";
 static void run(void)
 {
 	bool inlineFlag;
-	static uint8_t send_msg[262385];
+	static uint8_t send_msg[262385]= {1, 2, 3, 4, 5, 60, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
 	static uint8_t recv_msg[32];
 
 	struct rdma_addrinfo hints;
