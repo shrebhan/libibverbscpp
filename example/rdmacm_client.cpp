@@ -53,7 +53,7 @@ static void run(void)
 	ibv::queuepair::InitAttributes attr;
 	memset(&attr, 0, sizeof(attr));
 	ibv::queuepair::Capabilities cap;
-	cap.setMaxSendWr(1);
+	cap.setMaxSendWr(300);
 	cap.setMaxRecvWr(1);
 	cap.setMaxSendSge(1);
 	cap.setMaxRecvSge(1);

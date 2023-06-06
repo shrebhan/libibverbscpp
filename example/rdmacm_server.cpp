@@ -59,7 +59,7 @@ static int run(void)
 	ibv::queuepair::Capabilities cap;
 
 	cap.setMaxSendWr(1);
-	cap.setMaxRecvWr(1);
+	cap.setMaxRecvWr(300);
 	cap.setMaxSendSge(1);
 	cap.setMaxRecvSge(1);
 	cap.setMaxInlineData(512);
@@ -102,12 +102,12 @@ static int run(void)
 
 	for(int i=0; i<256; i++){
 		qp->postRecv(recv_wr, bad_recv_wr);
-		//while ((recv_cq->poll(1, &wc)) == 0);
+		while ((recv_cq->poll(1, &wc)) == 0);
 	    std::cout<<"3.5"<<std::endl;
 	    ///printf("message is [5] = %d \n", recv_msg[5]);
 	}
 	
-	while ((recv_cq->poll(256, &wc)) == 0);
+	//while ((recv_cq->poll(256, &wc)) == 0);
 	//std::cout<<"3.5"<<std::endl;
 	printf("message is [5] = %d \n", recv_msg[5]);
 
