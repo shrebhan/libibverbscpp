@@ -36,13 +36,13 @@
 #include <librdmacmcpp.h>
 
 static const char *server = "192.168.0.27";
-static const char *port = "7471";
+static const char *port = "9008";
 
 static void run(void)
 {
 	bool inlineFlag;
-	static uint8_t send_msg[1024];
-	static uint8_t recv_msg[1024];
+	static uint8_t send_msg[2048];
+	static uint8_t recv_msg[32];
 
 	struct rdma_addrinfo hints;
 
@@ -69,9 +69,9 @@ static void run(void)
 	// 	printf("rdma_client: device doesn't support IBV_SEND_INLINE, "
 	// 	       "using sge sends\n");
 
-	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 1024,
+	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 32,
 						    { ibv::AccessFlag::LOCAL_WRITE });
-	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 1024, {});
+	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 2048, {});
 
 	auto qp = id->getQP();
 	std::cout<<"1"<<std::endl;

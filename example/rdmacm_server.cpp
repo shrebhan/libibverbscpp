@@ -36,7 +36,7 @@
 #include <librdmacmcpp.h>
 
 static const char *server = "0.0.0.0";
-static const char *port = "7471";
+static const char *port = "9008";
 
 static int run(void)
 {
@@ -45,8 +45,8 @@ static int run(void)
 	ibv::workcompletion::WorkCompletion wc;
 	bool inlineFlag = false;
 
-	uint8_t send_msg[1024] = {1, 2, 3, 4, 5, 60, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-	uint8_t recv_msg[1024];
+	uint8_t send_msg[32] = {1, 2, 3, 4, 5, 60, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+	uint8_t recv_msg[2048];
 	
 
 	memset(&hints, 0, sizeof hints);
@@ -85,9 +85,9 @@ static int run(void)
 	// 	printf("rdma_server: device doesn't support IBV_SEND_INLINE, "
 	// 	       "using sge sends\n");
 
-	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 1024,
+	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 2048,
 						    { ibv::AccessFlag::LOCAL_WRITE });
-	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 1024, {});
+	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 32, {});
 
 	auto qp = id->getQP();
 	auto recv_wr = ibv::workrequest::Simple<ibv::workrequest::Recv>();
