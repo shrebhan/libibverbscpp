@@ -41,8 +41,8 @@ static const char *port = "7471";
 static void run(void)
 {
 	bool inlineFlag;
-	static uint8_t send_msg[256];
-	static uint8_t recv_msg[256];
+	static uint8_t send_msg[512];
+	static uint8_t recv_msg[512];
 
 	struct rdma_addrinfo hints;
 
@@ -57,20 +57,20 @@ static void run(void)
 	cap.setMaxRecvWr(1);
 	cap.setMaxSendSge(1);
 	cap.setMaxRecvSge(1);
-	cap.setMaxInlineData(256);
+	cap.setMaxInlineData(512);
 	attr.setCapabilities(cap);
 	attr.setSignalAll(1);
 	auto id = rdma::createEP(res, boost::none, boost::make_optional(attr));
 	// Check to see if we got inline data allowed or not
-	if (attr.getCapabilities().getMaxInlineData() >= 256)
+	if (attr.getCapabilities().getMaxInlineData() >= 512)
 		inlineFlag = true;
 	else
 		printf("rdma_client: device doesn't support IBV_SEND_INLINE, "
 		       "using sge sends\n");
 
-	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 256,
+	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 512,
 						    { ibv::AccessFlag::LOCAL_WRITE });
-	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 256, {});
+	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 512, {});
 
 	auto qp = id->getQP();
 	std::cout<<"1"<<std::endl;
