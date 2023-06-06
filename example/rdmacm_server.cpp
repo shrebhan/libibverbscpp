@@ -100,7 +100,7 @@ static int run(void)
 	
 	auto recv_cq = id->getQP()->getRecvCQ();
 
-	for(int i=0; i<256; i++){
+	for(int i=0; i<856; i++){
 		qp->postRecv(recv_wr, bad_recv_wr);
 		while ((recv_cq->poll(1, &wc)) == 0);
 	    std::cout<<"3.5"<<std::endl;
