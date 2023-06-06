@@ -96,7 +96,7 @@ static void run(void)
 
 	double time_taken;
 
-	for(int i=0; i<256; i++){
+	for(int i=0; i<856; i++){
 		clock_gettime(CLOCK_MONOTONIC, &start);
 		qp->postSend(wr, bad_wr);
 		//std::cout<<"3"<<std::endl;
@@ -116,7 +116,7 @@ static void run(void)
 	
 	
     time_taken = time_taken  * 1e-3;
-	std::cout<<"time taken = "<<time_taken<<" ns ...disconnecting ..."<<std::endl;
+	std::cout<<"time taken = "<<time_taken<<" us ...disconnecting ..."<<std::endl;
 	id->disconnect();
 }
 
