@@ -94,25 +94,29 @@ static void run(void)
 	// }
 	ibv::workcompletion::WorkCompletion wc;
 
-	clock_gettime(CLOCK_MONOTONIC, &start);
+	double time_taken;
 
 	for(int i=0; i<256; i++){
+		clock_gettime(CLOCK_MONOTONIC, &start);
 		qp->postSend(wr, bad_wr);
 		//std::cout<<"3"<<std::endl;
-		
+		clock_gettime(CLOCK_MONOTONIC, &end);
+		 
+		//time_taken += ((end.tv_sec - start.tv_sec) * 1e9);
+		time_taken += (end.tv_nsec - start.tv_nsec);
 		auto send_cq = qp->getSendCQ();
 		while ((send_cq->poll(1, &wc)) == 0);
 	}
-	clock_gettime(CLOCK_MONOTONIC, &end);
+	
 
 	auto recv_cq = id->getQP()->getRecvCQ();
 	while ((recv_cq->poll(1, &wc)) == 0);
 	
 
-	double time_taken;
-	time_taken = (end.tv_sec - start.tv_sec) * 1e9;
-    time_taken = (time_taken + (end.tv_nsec - start.tv_nsec)) * 1e-9;
-	std::cout<<"time taken = "<<time_taken<<" s ...disconnecting ..."<<std::endl;
+	
+	
+    time_taken = time_taken  * 1e-3;
+	std::cout<<"time taken = "<<time_taken<<" ns ...disconnecting ..."<<std::endl;
 	id->disconnect();
 }
 
