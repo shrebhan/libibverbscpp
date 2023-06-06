@@ -89,10 +89,9 @@ static void run(void)
 	// 	wr.setFlags({ ibv::workrequest::Flags::INLINE });
 	// }
 	ibv::workcompletion::WorkCompletion wc;
-	
+
 	for(int i=0; i<256; i++){
 		qp->postSend(wr, bad_wr);
-		send_msg[5] = i*10;
 		std::cout<<"3"<<std::endl;
 		
 		auto send_cq = qp->getSendCQ();
