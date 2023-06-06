@@ -90,9 +90,11 @@ static void run(void)
 	// }
 	ibv::workcompletion::WorkCompletion wc;
 
+	auto start = steady_clock::now();
+
 	for(int i=0; i<256; i++){
 		qp->postSend(wr, bad_wr);
-		std::cout<<"3"<<std::endl;
+		//std::cout<<"3"<<std::endl;
 		
 		auto send_cq = qp->getSendCQ();
 		while ((send_cq->poll(1, &wc)) == 0);
@@ -101,8 +103,9 @@ static void run(void)
 
 	auto recv_cq = id->getQP()->getRecvCQ();
 	while ((recv_cq->poll(1, &wc)) == 0);
-
-	std::cout<<"disconnecting ..."<<std::endl;
+	double tot_t = std::chrono::duration_cast<std::chrono::microseconds>(steady_clock::now() - start)
+        .count();
+	std::cout<<"time taken = "<<tot_t<<" us ...disconnecting ..."<<std::endl;
 	id->disconnect();
 }
 
