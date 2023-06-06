@@ -45,8 +45,8 @@ static int run(void)
 	ibv::workcompletion::WorkCompletion wc;
 	bool inlineFlag = false;
 
-	uint8_t send_msg[512] = {1, 2, 3, 4, 5, 60, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-	uint8_t recv_msg[512];
+	uint8_t send_msg[1024] = {1, 2, 3, 4, 5, 60, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+	uint8_t recv_msg[1024];
 	
 
 	memset(&hints, 0, sizeof hints);
@@ -62,7 +62,7 @@ static int run(void)
 	cap.setMaxRecvWr(1);
 	cap.setMaxSendSge(1);
 	cap.setMaxRecvSge(1);
-	cap.setMaxInlineData(512);
+	cap.setMaxInlineData(1024);
 
 	init_attr.setCapabilities(cap);
 	init_attr.setSignalAll(1);
@@ -78,15 +78,15 @@ static int run(void)
 	id->getQP()->query(qp_attr, {ibv::queuepair::AttrMask::CAP},  init_attr, {});
 	std::cout<<"2"<<std::endl;
 
-	if (init_attr.getCapabilities().getMaxInlineData() >= 512)
+	if (init_attr.getCapabilities().getMaxInlineData() >= 1024)
 		inlineFlag = true;
 	else
 		printf("rdma_server: device doesn't support IBV_SEND_INLINE, "
 		       "using sge sends\n");
 
-	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 512,
+	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 1024,
 						    { ibv::AccessFlag::LOCAL_WRITE });
-	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 512, {});
+	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 1024, {});
 
 	auto qp = id->getQP();
 	auto recv_wr = ibv::workrequest::Simple<ibv::workrequest::Recv>();
