@@ -57,20 +57,27 @@ static int run(void)
 	ibv::queuepair::InitAttributes init_attr;
 	memset(&init_attr, 0, sizeof init_attr);
 	ibv::queuepair::Capabilities cap;
+
 	cap.setMaxSendWr(1);
 	cap.setMaxRecvWr(1);
 	cap.setMaxSendSge(1);
 	cap.setMaxRecvSge(1);
 	cap.setMaxInlineData(32);
+
 	init_attr.setCapabilities(cap);
 	init_attr.setSignalAll(1);
 	auto listen_id = rdma::createEP(res, boost::none, boost::make_optional(init_attr));
+
 	listen_id->listen(0);
+	std::cout<<"1"<<endl;
 	auto id = listen_id->getRequest();
 
 	memset(&qp_attr, 0, sizeof qp_attr);
 	memset(&init_attr, 0, sizeof init_attr);
+
 	id->getQP()->query(qp_attr, {ibv::queuepair::AttrMask::CAP},  init_attr, {});
+	std::cout<<"2"<<endl;
+
 	if (init_attr.getCapabilities().getMaxInlineData() >= 32)
 		inlineFlag = true;
 	else
@@ -86,19 +93,22 @@ static int run(void)
 	recv_wr.setLocalAddress(mr->getSlice());
 	ibv::workrequest::Recv *bad_recv_wr;
 	qp->postRecv(recv_wr, bad_recv_wr);
+	std::cout<<"2.5"<<endl;
 	id->accept(nullptr);
-
+	std::cout<<"3"<<endl;
 
 	auto recv_cq = id->getQP()->getRecvCQ();
 	while ((recv_cq->poll(1, &wc)) == 0);
 
 	auto wr = ibv::workrequest::Simple<ibv::workrequest::Send>();
+
 	ibv::workrequest::SendWr *bad_wr;
 	wr.setLocalAddress(send_mr->getSlice());
 	if (inlineFlag) {
 		wr.setFlags({ ibv::workrequest::Flags::INLINE });
 	}
 	qp->postSend(wr, bad_wr);
+	std::cout<<"4"<<endl;
 
 	auto send_cq = qp->getSendCQ();
 	while ((send_cq->poll(1, &wc)) == 0);

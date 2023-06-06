@@ -73,11 +73,13 @@ static void run(void)
 	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 32, {});
 
 	auto qp = id->getQP();
+	std::cout<<"1"<<endl;
 	auto recv_wr = ibv::workrequest::Simple<ibv::workrequest::Recv>();
 	recv_wr.setLocalAddress(mr->getSlice());
 	ibv::workrequest::Recv *bad_recv_wr;
 	qp->postRecv(recv_wr, bad_recv_wr);
 	id->connect(nullptr);
+	std::cout<<"2"<<endl;
 
 	auto wr = ibv::workrequest::Simple<ibv::workrequest::Send>();
 	ibv::workrequest::SendWr *bad_wr;
@@ -86,7 +88,7 @@ static void run(void)
 		wr.setFlags({ ibv::workrequest::Flags::INLINE });
 	}
 	qp->postSend(wr, bad_wr);
-
+	std::cout<<"3"<<endl;
 	ibv::workcompletion::WorkCompletion wc;
 	auto send_cq = qp->getSendCQ();
 	while ((send_cq->poll(1, &wc)) == 0);
