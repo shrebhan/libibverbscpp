@@ -34,7 +34,7 @@
 #include <errno.h>
 #include <getopt.h>
 #include <librdmacmcpp.h>
-#include <chrono>
+#include <sys/time.h>
 
 static const char *server = "192.168.0.27";
 static const char *port = "9008";
@@ -46,6 +46,7 @@ static void run(void)
 	bool inlineFlag;
 	static uint8_t send_msg[1024]= {1, 2, 3, 4, 5, 60, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
 	static uint8_t recv_msg[32];
+	struct timespec start, end;
 
 	struct rdma_addrinfo hints;
 
@@ -93,7 +94,7 @@ static void run(void)
 	// }
 	ibv::workcompletion::WorkCompletion wc;
 
-	auto start = steady_clock::now();
+	clock_gettime(CLOCK_MONOTONIC, &start);
 
 	for(int i=0; i<256; i++){
 		qp->postSend(wr, bad_wr);
@@ -106,9 +107,12 @@ static void run(void)
 
 	auto recv_cq = id->getQP()->getRecvCQ();
 	while ((recv_cq->poll(1, &wc)) == 0);
-	double tot_t = std::chrono::duration_cast<std::chrono::microseconds>(steady_clock::now() - start)
-        .count();
-	std::cout<<"time taken = "<<tot_t<<" us ...disconnecting ..."<<std::endl;
+	clock_gettime(CLOCK_MONOTONIC, &end);
+
+	double time_taken;
+	time_taken = (end.tv_sec - start.tv_sec) * 1e9;
+    time_taken = (time_taken + (end.tv_nsec - start.tv_nsec)) * 1e-9;
+	std::cout<<"time taken = "<<time_taken<<" s ...disconnecting ..."<<std::endl;
 	id->disconnect();
 }
 
