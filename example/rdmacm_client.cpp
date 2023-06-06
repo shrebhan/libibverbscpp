@@ -103,11 +103,11 @@ static void run(void)
 		auto send_cq = qp->getSendCQ();
 		while ((send_cq->poll(1, &wc)) == 0);
 	}
-	
+	clock_gettime(CLOCK_MONOTONIC, &end);
 
 	auto recv_cq = id->getQP()->getRecvCQ();
 	while ((recv_cq->poll(1, &wc)) == 0);
-	clock_gettime(CLOCK_MONOTONIC, &end);
+	
 
 	double time_taken;
 	time_taken = (end.tv_sec - start.tv_sec) * 1e9;
