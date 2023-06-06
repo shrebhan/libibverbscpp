@@ -41,8 +41,8 @@ static const char *port = "7471";
 static void run(void)
 {
 	bool inlineFlag;
-	static uint8_t send_msg[262385];
-	static uint8_t recv_msg[262385];
+	static uint8_t send_msg[4000];
+	static uint8_t recv_msg[4000];
 
 	struct rdma_addrinfo hints;
 
@@ -69,9 +69,9 @@ static void run(void)
 	// 	printf("rdma_client: device doesn't support IBV_SEND_INLINE, "
 	// 	       "using sge sends\n");
 
-	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 262385,
+	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 4000,
 						    { ibv::AccessFlag::LOCAL_WRITE });
-	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 262385, {});
+	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 4000, {});
 
 	auto qp = id->getQP();
 	std::cout<<"1"<<std::endl;
@@ -85,9 +85,9 @@ static void run(void)
 	auto wr = ibv::workrequest::Simple<ibv::workrequest::Send>();
 	ibv::workrequest::SendWr *bad_wr;
 	wr.setLocalAddress(send_mr->getSlice());
-	if (inlineFlag) {
-		wr.setFlags({ ibv::workrequest::Flags::INLINE });
-	}
+	// if (inlineFlag) {
+	// 	wr.setFlags({ ibv::workrequest::Flags::INLINE });
+	// }
 	qp->postSend(wr, bad_wr);
 	std::cout<<"3"<<std::endl;
 	ibv::workcompletion::WorkCompletion wc;
