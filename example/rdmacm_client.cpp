@@ -41,8 +41,8 @@ static const char *port = "7471";
 static void run(void)
 {
 	bool inlineFlag;
-	static uint8_t send_msg[4000];
-	static uint8_t recv_msg[4000];
+	static uint8_t send_msg[1024];
+	static uint8_t recv_msg[1024];
 
 	struct rdma_addrinfo hints;
 
@@ -57,7 +57,7 @@ static void run(void)
 	cap.setMaxRecvWr(1);
 	cap.setMaxSendSge(1);
 	cap.setMaxRecvSge(1);
-	cap.setMaxInlineData(256);
+	cap.setMaxInlineData(512);
 	attr.setCapabilities(cap);
 	attr.setSignalAll(1);
 	std::cout<<"before"<<std::endl;
@@ -69,9 +69,9 @@ static void run(void)
 	// 	printf("rdma_client: device doesn't support IBV_SEND_INLINE, "
 	// 	       "using sge sends\n");
 
-	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 4000,
+	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 1024,
 						    { ibv::AccessFlag::LOCAL_WRITE });
-	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 4000, {});
+	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 1024, {});
 
 	auto qp = id->getQP();
 	std::cout<<"1"<<std::endl;
@@ -97,6 +97,7 @@ static void run(void)
 	auto recv_cq = id->getQP()->getRecvCQ();
 	while ((recv_cq->poll(1, &wc)) == 0);
 
+	std::cout<<"disconnecting ..."<<std::endl;
 	id->disconnect();
 }
 
