@@ -62,11 +62,11 @@ static void run(void)
 	attr.setSignalAll(1);
 	auto id = rdma::createEP(res, boost::none, boost::make_optional(attr));
 	// Check to see if we got inline data allowed or not
-	if (attr.getCapabilities().getMaxInlineData() >= 1024)
-		inlineFlag = true;
-	else
-		printf("rdma_client: device doesn't support IBV_SEND_INLINE, "
-		       "using sge sends\n");
+	// if (attr.getCapabilities().getMaxInlineData() >= 1024)
+	// 	inlineFlag = true;
+	// else
+	// 	printf("rdma_client: device doesn't support IBV_SEND_INLINE, "
+	// 	       "using sge sends\n");
 
 	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 1024,
 						    { ibv::AccessFlag::LOCAL_WRITE });

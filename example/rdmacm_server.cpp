@@ -62,7 +62,7 @@ static int run(void)
 	cap.setMaxRecvWr(1);
 	cap.setMaxSendSge(1);
 	cap.setMaxRecvSge(1);
-	cap.setMaxInlineData(1024);
+	//cap.setMaxInlineData(1024);
 
 	init_attr.setCapabilities(cap);
 	init_attr.setSignalAll(1);
@@ -78,11 +78,11 @@ static int run(void)
 	id->getQP()->query(qp_attr, {ibv::queuepair::AttrMask::CAP},  init_attr, {});
 	std::cout<<"2"<<std::endl;
 
-	if (init_attr.getCapabilities().getMaxInlineData() >= 1024)
-		inlineFlag = true;
-	else
-		printf("rdma_server: device doesn't support IBV_SEND_INLINE, "
-		       "using sge sends\n");
+	// if (init_attr.getCapabilities().getMaxInlineData() >= 1024)
+	// 	inlineFlag = true;
+	// else
+	// 	printf("rdma_server: device doesn't support IBV_SEND_INLINE, "
+	// 	       "using sge sends\n");
 
 	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 1024,
 						    { ibv::AccessFlag::LOCAL_WRITE });
