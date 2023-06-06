@@ -41,7 +41,7 @@ static const char *port = "9008";
 static void run(void)
 {
 	bool inlineFlag;
-	static uint8_t send_msg[2048];
+	static uint8_t send_msg[262385];
 	static uint8_t recv_msg[32];
 
 	struct rdma_addrinfo hints;
@@ -71,7 +71,7 @@ static void run(void)
 
 	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 32,
 						    { ibv::AccessFlag::LOCAL_WRITE });
-	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 2048, {});
+	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 262385, {});
 
 	auto qp = id->getQP();
 	std::cout<<"1"<<std::endl;

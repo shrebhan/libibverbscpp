@@ -46,7 +46,7 @@ static int run(void)
 	bool inlineFlag = false;
 
 	uint8_t send_msg[32] = {1, 2, 3, 4, 5, 60, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-	uint8_t recv_msg[2048];
+	uint8_t recv_msg[262385];
 	
 
 	memset(&hints, 0, sizeof hints);
@@ -85,7 +85,7 @@ static int run(void)
 	// 	printf("rdma_server: device doesn't support IBV_SEND_INLINE, "
 	// 	       "using sge sends\n");
 
-	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 2048,
+	auto mr = id->getPD()->registerMemoryRegion(recv_msg, 262385,
 						    { ibv::AccessFlag::LOCAL_WRITE });
 	auto send_mr = id->getPD()->registerMemoryRegion(send_msg, 32, {});
 
