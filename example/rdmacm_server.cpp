@@ -62,10 +62,11 @@ static int run(void)
 	cap.setMaxRecvWr(1);
 	cap.setMaxSendSge(1);
 	cap.setMaxRecvSge(1);
-	cap.setMaxInlineData(1024);
+	cap.setMaxInlineData(512);
 
 	init_attr.setCapabilities(cap);
 	init_attr.setSignalAll(1);
+	std::cout<<"before"<<std::endl;
 	auto listen_id = rdma::createEP(res, boost::none, boost::make_optional(init_attr));
 
 	listen_id->listen(0);

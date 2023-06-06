@@ -57,9 +57,10 @@ static void run(void)
 	cap.setMaxRecvWr(1);
 	cap.setMaxSendSge(1);
 	cap.setMaxRecvSge(1);
-	cap.setMaxInlineData(1024);
+	cap.setMaxInlineData(512);
 	attr.setCapabilities(cap);
 	attr.setSignalAll(1);
+	std::cout<<"before"<<std::endl;
 	auto id = rdma::createEP(res, boost::none, boost::make_optional(attr));
 	// Check to see if we got inline data allowed or not
 	// if (attr.getCapabilities().getMaxInlineData() >= 1024)
