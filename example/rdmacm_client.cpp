@@ -39,6 +39,8 @@
 static const char *server = "192.168.0.27";
 static const char *port = "9008";
 
+using namespace std;
+
 static void run(void)
 {
 	bool inlineFlag;
@@ -91,7 +93,7 @@ static void run(void)
 	// }
 	ibv::workcompletion::WorkCompletion wc;
 
-	auto start = monotonic_clock::now();
+	auto start = steady_clock::now();
 
 	for(int i=0; i<256; i++){
 		qp->postSend(wr, bad_wr);
@@ -104,7 +106,7 @@ static void run(void)
 
 	auto recv_cq = id->getQP()->getRecvCQ();
 	while ((recv_cq->poll(1, &wc)) == 0);
-	double tot_t = std::chrono::duration_cast<std::chrono::microseconds>(monotonic_clock::now() - start)
+	double tot_t = std::chrono::duration_cast<std::chrono::microseconds>(steady_clock::now() - start)
         .count();
 	std::cout<<"time taken = "<<tot_t<<" us ...disconnecting ..."<<std::endl;
 	id->disconnect();
